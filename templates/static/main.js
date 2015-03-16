@@ -41,7 +41,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
       }
     }).success(function(data, status, headers, config) {})
   };
-  pollQueue($scope.sessionkey);
+  pollQueue($scope.sessionkey||"KeyWasNotPassedDown");
 
   function pollQueue(sessionkey) {
     queueRefresh.poll(sessionkey).then(function(data) {
