@@ -4,11 +4,13 @@
 
   <head>
     <meta charset="utf-8">
-    <title>{{ queueData.data.queue.speed }}/s - SabNZBd</title>
+    <title>{{ queue.speed }}/s - SabNZBd</title>
+    <script src="static/jquery-2.1.3.js"></script>
+    <script src="static/jquery.ui.sortable.min.js"></script>
     <script src="static/angular.js"></script>
     <script src="static/angular-animate.min.js"></script>
+    <script src="static/sortable.js"></script>
     <script src="static/lodash.js"></script>
-    <script src="static/jquery-2.1.3.js"></script>
     <script src="static/main.js"></script>
     <script src="static/ui-bootstrap-tpls-0.12.1.js"></script>
     <link href="static/bootstrap.min.css" rel="stylesheet">
@@ -19,18 +21,28 @@
 
   <body>
     <div data-ng-init="showRawData=false" data-ng-show="showRawData" class="bg-info">
-      {{ queueData }}
+      {{ queue }}
     </div>
     <button class="btn btn-info btn-xs" data-ng-click=showRawData=!showRawData>{{ showRawData ? "Hide" : "Show" }} raw data</button>
     <div>
       <input type="text" data-ng-model="search.filename" />
-
     </div>
     <!-- Queue ( queue.tmpl )-->
 
-    Speed: {{ queueData.data.queue.speed }}/s $T('menu-queue')
-    <div id="queue">
-      <table class="table table-striped table-bordered table-condensed">
+    Speed: {{ queue.speed }}/s $T('menu-queue') <br/>
+    Total number of files: {{ queue.noofslots }} <br/>
+    Items per page: <select data-ng-model="noOfRows" data-ng-options="item for item in [10,20,30,40,0]"></select> <br/>
+    <div class="form-group" style="width:50px;">
+    Speedlimit: <input type="text" class="form-control" data-ng-model="speedlimit" data-ng-pattern="/^\d+$/"/><button class="btn btn-default" data-ng-click="speedLimit(speedlimit, \$event)">set</button>
+    </div>
+    <button class="btn btn-info" data-ng-click="getQueueChange(!refreshing)">{{ refreshing ? "Stop" : "Start" }} updating</button>
+    <div>
+
+      <ul ui-sortable="sortableOptionsA" class="list items-container" ng-model="queue.slots">
+        <li class="item2 sortable2" ng-repeat="item2 in queue.slots" ng-class="sortable2"> {{item2.filename}}</li>
+      </ul>
+
+      <table class="table table-striped table-bordered table-condensed queueTable"  ui-sortable="sortableOptions" data-ng-model="queue.slots">
         <tr>
           <td>Status</td>
           <td>Filename</td>
@@ -40,9 +52,9 @@
           <td>Delete</td>
         </tr>
         <tbody>
-          <tr data-ng-class="rowClass" class="repeat-item" data-ng-repeat="slot in queueData.data.queue.slots | filter:search | orderBy:slot.index track by slot.nzo_id">
+          <tr data-ng-class="rowClass" class="repeat-item" data-ng-repeat="slot in queue.slots | filter:search | orderBy:slot.index track by slot.nzo_id">
             <td>
-              <button class="btn btn-default" data-ng-click="pause(slot.nzo_id, slot.status == 'Paused', \$event);rowClass='warning'"> {{slot.status}}</button>
+              <button class="btn btn-default" data-ng-click="pause(slot.nzo_id, slot.status == 'Paused', \$event);rowClass=slot.status == 'Paused' ? 'warning' : ''"> {{slot.status}}</button>
             </td>
             <td>{{slot.filename}}</td>
             <td>
@@ -53,7 +65,7 @@
             <td>{{slot.timeleft}}</td>
             <td>
               <select id="script-all" data-ng-model="selectedCategory" data-ng-change="changeCategory(slot.nzo_id, selectedCategory,\$event)">
-                <option data-ng-repeat="category in queueData.data.queue.categories" data-ng-selected="category == slot.cat">{{ category }}</option>
+                <option data-ng-repeat="category in queue.categories" data-ng-selected="category == slot.cat">{{ category }}</option>
               </select>
             </td>
             <td>
@@ -62,6 +74,7 @@
           </tr>
         </tbody>
       </table>
+      <pagination total-items="queue.noofslots" data-ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="true" items-per-page="noOfRows"></pagination>
     </div>
   </body>
 
