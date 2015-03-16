@@ -10,7 +10,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
         name: "delete",
         value: id,
         output: "json",
-        apikey: "$session"
+        apikey: "$scope.sessionkey"
       }
     })
   };
@@ -23,7 +23,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
         value: id,
         value2: category,
         output: "json",
-        apikey: "$session"
+        apikey: "$scope.sessionkey"
       }
     }).success(function(data, status, headers, config) {})
   };
@@ -37,7 +37,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
         name: actionType,
         value: id,
         output: "json",
-        apikey: "$session"
+        apikey: "$scope.sessionkey"
       }
     }).success(function(data, status, headers, config) {})
   };
@@ -60,7 +60,7 @@ app.factory('queueRefresh', function($http, $timeout) {
         limit: 10,
         mode: "queue",
         output: "json",
-        apikey: "$session"
+        apikey: "$scope.sessionkey"
       }
     }).then(function(responseData) {
       return responseData;
