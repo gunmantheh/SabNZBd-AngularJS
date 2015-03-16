@@ -48,7 +48,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
       console.log("Getting Queue using API key: " + sessionkey)
       $scope.queueData = data;
       $scope.data = data.queue;
-      $timeout(pollQueue, $scope.refresh * 1000);
+      $timeout(pollQueue(sessionkey), $scope.refresh * 1000);
     })
   }
 });
