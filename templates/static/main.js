@@ -1,5 +1,5 @@
 var app = angular.module("sabnzbdApp", ['ui.bootstrap', 'ngAnimate']);
-app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
+app.controller("PostsCtrl", function($scope, $http, $interval) {
   $scope.refresh = 5;
 
   $scope.deleteNZB = function(id, event) {
@@ -12,7 +12,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
         output: "json",
         apikey: $scope.sessionkey
       }
-    })
+    });
   };
 
   $scope.changeCategory = function(id, category, event) {
@@ -25,7 +25,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
         output: "json",
         apikey: $scope.sessionkey
       }
-    }).success(function(data, status, headers, config) {})
+    }).success(function(data, status, headers, config) {});
   };
 
   $scope.pause = function(id, isPaused, event) {
@@ -39,23 +39,12 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
         output: "json",
         apikey: $scope.sessionkey
       }
-    }).success(function(data, status, headers, config) {})
+    }).success(function(data, status, headers, config) {});
   };
-  pollQueue($scope.sessionkey||"KeyWasNotPassedDown");
+  pollQueue($scope.sessionkey || "KeyWasNotPassedDown");
 
-  function pollQueue(sessionkey) {
-    queueRefresh.poll(sessionkey).then(function(data) {
-      console.log("Getting Queue using API key: " + sessionkey)
-      $scope.queueData = data;
-      $scope.data = data.queue;
-      $timeout(pollQueue(sessionkey), $scope.refresh * 1000);
-    })
-  }
-});
-app.factory('queueRefresh', function($http, $timeout) {
-  $http.defaults.cache = false;
-  var poller = function(sessionkey) {
-    return $http.get('tapi', {
+  function getQueue() {
+    $http.get('tapi', {
       params: {
         start: 0,
         limit: 10,
@@ -63,12 +52,8 @@ app.factory('queueRefresh', function($http, $timeout) {
         output: "json",
         apikey: sessionkey
       }
-    }).then(function(responseData) {
-      return responseData;
+    }).success(function(data, status, headers, config) {
+      $session.queueData = data;
     });
-  };
-
-  return {
-    poll: poller
   }
 });
