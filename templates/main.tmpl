@@ -32,16 +32,16 @@
     <div>
       <input type="text" data-ng-model="search.filename" />
     </div>
-    <!-- Queue ( queue.tmpl )-->
-
     Speed: {{ queue.speed }}/s $T('menu-queue')
     <br/> Total number of files: {{ queue.noofslots }}
-    <br/> Items per page:
-    <select data-ng-model="noOfRows" data-ng-options="item for item in [10,20,30,40,0]"></select>
     <br/>
-    <div class="form-group" style="width:50px;">
-      Speedlimit:
-      <input type="text" class="form-control" data-ng-model="speedlimit" data-ng-pattern="/^\d+$/" />
+    <div class="form-group" >
+      <br/> Items per page:
+      <select class="form-control" style="width:66px;" data-ng-model="noOfRows" data-ng-options="item for item in [10,20,30,40,0]"></select>
+      <br/> Refresh Speed:
+      <select class="form-control" style="width:66px;" data-ng-model="refresh" data-ng-options="item for item in [1,2,3,4,5,10,15,20,30,60]"></select>
+      <br/> Speedlimit:
+      <input type="text" class="form-control" style="width:75px;" data-ng-model="speedlimit" data-ng-pattern="/^\d+$/" />
       <button class="btn btn-default" data-ng-click="speedLimit(speedlimit, \$event)">set</button>
     </div>
     <button class="btn btn-info" data-ng-click="getQueueChange(!refreshing)">{{ refreshing ? "Stop" : "Start" }} updating</button>
