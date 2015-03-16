@@ -76,7 +76,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
     console.log('Called getQueue, using API: ' + $scope.sessionkey);
     $http.get('tapi', {
       params: {
-        start: $scope.currentPage == 1 ? 0 : $scope.currentPage * $scope.noOfRows,
+        start: $scope.currentPage - 1 * $scope.noOfRows,
         limit: $scope.noOfRows,
         mode: "queue",
         output: "json",
