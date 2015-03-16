@@ -87,6 +87,20 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
 
   };
 
+
+  $scope.changeOrder = function(id, toIndex) {
+    console.log("Moving queue item", id, toIndex);
+    $http.get('tapi', {
+      params: {
+        mode: "switch",
+        value: id,
+        value2: toIndex,
+        output: "json",
+        apikey: $scope.sessionkey
+      }
+    }).success(function(data, status, headers, config) {});
+  };
+
   var fixHelper = function(e, ui) {
     ui.children().each(function() {
       $(this).width($(this).width());
@@ -104,7 +118,16 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
       // }).join(', ');
       var fromIndex = ui.item.sortable.index;
       var toIndex = ui.item.sortable.dropindex;
-      console.log('moved', ui.item.scope().slot.nzo_id, ui.item);
+      var id = ui.item.scope().slot.nzo_id;
+      if (_.isUndefined(toIndex)) {
+        console.log('invalid target', id, fromIndex, toIndex);
+        return false;
+      }
+      console.log('moved', id, fromIndex, toIndex);
+
+      $scope.changeOrder(id, toIndex);
+
+      return true;
     },
     update: function(e, ui) {
       var dropTarget = ui.item.sortable.droptarget;
