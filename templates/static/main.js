@@ -30,7 +30,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
 
   $scope.pause = function(id, isPaused, event) {
     var actionType = isPaused ? "resume" : "pause";
-    console.log("Pausing/Resuming queue item", id, actionType);
+    console.log("{{ isPaused ? "Resuming" : "Pausing" }} queue item", id, actionType);
     $http.get('tapi', {
       params: {
         mode: "queue",
