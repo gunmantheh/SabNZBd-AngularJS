@@ -8,63 +8,11 @@
 <script src="static/angular-animate.min.js"></script>
 <script src="static/lodash.js"></script>
 <script src="static/jquery-2.1.3.js"></script>
+<script src="static/main.js"></script>
 <script src="static/ui-bootstrap-tpls-0.12.1.js"></script>
 <link href="static/bootstrap.min.css" rel="stylesheet">
 <link href="static/transitions.css" rel="stylesheet">
    <script type="text/javascript">
-var app = angular.module("sabnzbdApp", ['ui.bootstrap', 'ngAnimate']);
-app.controller("PostsCtrl", function(\$scope, \$http, \$timeout, queueRefresh)
-{
-\$scope.deleteNZB = function(id, event)
-{
-	console.log("Removing queue item", id);
-	\$http.get('tapi', {params: { mode:"queue", name:"delete", value:id, output:"json", apikey: "$session" }}).success(function(data, status, headers, config)
-	{
-	})
-};
-
-\$scope.changeCategory = function(id, category, event)
-{
-	console.log("Changing category ", id, category);
-	\$http.get('tapi', {params: { mode:"change_cat", value:id, value2:category, output:"json", apikey: "$session" }}).success(function(data, status, headers, config)
-	{
-	})
-};
-
-\$scope.pause = function(id, isPaused, event)
-{
-	var actionType = isPaused ? "resume" : "pause";
-	console.log("Pausing/Resuming queue item", id, actionType);
-	\$http.get('tapi', {params: { mode:"queue", name:actionType, value:id, output:"json", apikey: "$session" }}).success(function(data, status, headers, config)
-	{
-	})
-};
-	pollQueue();
-	
-function pollQueue(){
-	queueRefresh.poll().then(function(data)
-	{
-		\$scope.queueData = data;
-		\$timeout(pollQueue, 1000);
-	})
-}
-}
-);
-app.factory('queueRefresh', function (\$http, \$timeout) {
-    \$http.defaults.cache = false;
-    var poller = function () {
-        return \$http.get('tapi', {params: { start:0, limit: 10, mode:"queue", output:"json", apikey: "$session" }}).then(function (responseData) {
-            return responseData;
-        });
-    };
-
-    return {
-        poll: poller
-    }
-});
-
-
-
   </script>
   </head>
   <body>
@@ -74,10 +22,10 @@ app.factory('queueRefresh', function (\$http, \$timeout) {
 	<button class="btn btn-info btn-xs" data-ng-click=showRawData=!showRawData>{{ showRawData ? "Hide" : "Show" }} raw data</button>
           <div>
           <input type="text" data-ng-model="search.filename"/>
-          
+
           </div>
 <!-- Queue ( queue.tmpl )-->
-	
+
 	Speed: {{ queueData.data.queue.speed }}/s
 	$T('menu-queue')
 	<div id="queue">
@@ -108,4 +56,3 @@ app.factory('queueRefresh', function (\$http, \$timeout) {
 	</div>
  </body>
  </html>
-
