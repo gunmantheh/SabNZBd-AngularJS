@@ -1,0 +1,111 @@
+<head>
+ <!DOCTYPE html>
+<html data-ng-app="sabnzbdApp" data-ng-controller="PostsCtrl">
+   <head>
+   <meta charset="utf-8">
+  <title>{{ queueData.data.queue.speed }}/s - SabNZBd</title>
+<script src="static/angular.js"></script>
+<script src="static/angular-animate.min.js"></script>
+<script src="static/lodash.js"></script>
+<script src="static/jquery-2.1.3.js"></script>
+<script src="static/ui-bootstrap-tpls-0.12.1.js"></script>
+<link href="static/bootstrap.min.css" rel="stylesheet">
+<link href="static/transitions.css" rel="stylesheet">
+   <script type="text/javascript">
+var app = angular.module("sabnzbdApp", ['ui.bootstrap', 'ngAnimate']);
+app.controller("PostsCtrl", function(\$scope, \$http, \$timeout, queueRefresh)
+{
+\$scope.deleteNZB = function(id, event)
+{
+	console.log("Removing queue item", id);
+	\$http.get('tapi', {params: { mode:"queue", name:"delete", value:id, output:"json", apikey: "$session" }}).success(function(data, status, headers, config)
+	{
+	})
+};
+
+\$scope.changeCategory = function(id, category, event)
+{
+	console.log("Changing category ", id, category);
+	\$http.get('tapi', {params: { mode:"change_cat", value:id, value2:category, output:"json", apikey: "$session" }}).success(function(data, status, headers, config)
+	{
+	})
+};
+
+\$scope.pause = function(id, isPaused, event)
+{
+	var actionType = isPaused ? "resume" : "pause";
+	console.log("Pausing/Resuming queue item", id, actionType);
+	\$http.get('tapi', {params: { mode:"queue", name:actionType, value:id, output:"json", apikey: "$session" }}).success(function(data, status, headers, config)
+	{
+	})
+};
+	pollQueue();
+	
+function pollQueue(){
+	queueRefresh.poll().then(function(data)
+	{
+		\$scope.queueData = data;
+		\$timeout(pollQueue, 1000);
+	})
+}
+}
+);
+app.factory('queueRefresh', function (\$http, \$timeout) {
+    \$http.defaults.cache = false;
+    var poller = function () {
+        return \$http.get('tapi', {params: { start:0, limit: 10, mode:"queue", output:"json", apikey: "$session" }}).then(function (responseData) {
+            return responseData;
+        });
+    };
+
+    return {
+        poll: poller
+    }
+});
+
+
+
+  </script>
+  </head>
+  <body>
+	<div data-ng-init="showRawData=false" data-ng-show="showRawData" class="bg-info">
+	  {{ queueData }}
+	</div>
+	<button class="btn btn-info btn-xs" data-ng-click=showRawData=!showRawData>{{ showRawData ? "Hide" : "Show" }} raw data</button>
+          <div>
+          <input type="text" data-ng-model="search.filename"/>
+          
+          </div>
+<!-- Queue ( queue.tmpl )-->
+	
+	Speed: {{ queueData.data.queue.speed }}/s
+	$T('menu-queue')
+	<div id="queue">
+		<table class="table table-striped table-bordered table-condensed">
+		<tr>
+			<td>Status</td>
+			<td>Filename</td>
+			<td>Percentage</td>
+			<td>TimeLeft</td>
+			<td>Category</td>
+			<td>Delete</td>
+		</tr>
+		<tbody>
+		<tr data-ng-class="rowClass" class="repeat-item" data-ng-repeat="slot in queueData.data.queue.slots | filter:search | orderBy:slot.index track by slot.nzo_id">
+			<td><button class="btn btn-default" data-ng-click="pause(slot.nzo_id, slot.status == 'Paused', \$event);rowClass='warning'"> {{slot.status}}</button></td>
+			<td>{{slot.filename}}</td>
+			<td><progressbar max="100" value="slot.percentage"><span style="color:black; white-space:nowrap;width:100%;">{{slot.percentage}} %</span></progressbar></td>
+			<td>{{slot.timeleft}}</td>
+			<td>
+				<select id="script-all" data-ng-model="selectedCategory" data-ng-change="changeCategory(slot.nzo_id, selectedCategory,\$event)">
+					<option data-ng-repeat="category in queueData.data.queue.categories" data-ng-selected="category == slot.cat">{{ category }}</option>
+				</select>
+			</td>
+			<td><button class="btn btn-danger" data-ng-click="deleteNZB(slot.nzo_id,\$event)">Delete</button></td>
+		</tr>
+		</tbody>
+		</table>
+	</div>
+ </body>
+ </html>
+
