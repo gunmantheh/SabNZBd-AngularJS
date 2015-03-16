@@ -45,7 +45,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
 
   $scope.pause = function(id, isPaused, event) {
     var actionType = isPaused ? "resume" : "pause";
-    console.log("Pausing/Resuming queue item", id, actionType);
+    console.log(isPaused ? "Resuming" : "Pausing" + " queue item ", id, actionType);
     $http.get('tapi', {
       params: {
         mode: "queue",
@@ -55,6 +55,20 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
         apikey: $scope.sessionkey
       }
     }).success(function(data, status, headers, config) {});
+  };
+
+  $scope.pauseAll = function(isPaused, event) {
+    var actionType = isPaused ? "resume" : "pause";
+    console.log(isPaused ? "Resuming" : "Pausing" + " queue item ", actionType);
+    $http.get('tapi', {
+      params: {
+        mode: actionType,
+        output: "json",
+        apikey: $scope.sessionkey
+      }
+    }).success(function(data, status, headers, config) {
+      $scope.pausedAll = !isPaused;
+    });
   };
 
   $scope.counter = 0;

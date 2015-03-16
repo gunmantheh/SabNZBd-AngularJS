@@ -43,6 +43,7 @@
       <br/> Speedlimit:
       <input type="text" class="form-control" style="width:75px;" data-ng-model="speedlimit" data-ng-pattern="/^\d+$/" />
       <button class="btn btn-default" data-ng-click="speedLimit(speedlimit, \$event)">set</button>
+      <button class="btn btn-default" data-ng-click="pauseAll(pausedAll, \$event);">{{ pausedAll ? "Resume" : "Pause" }} </button>
     </div>
     <button class="btn btn-info" data-ng-click="getQueueChange(!refreshing)">{{ refreshing ? "Stop" : "Start" }} updating</button>
     <div>
