@@ -41,10 +41,10 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
       }
     }).success(function(data, status, headers, config) {})
   };
-  pollQueue();
+  pollQueue($scope.sessionkey);
 
-  function pollQueue() {
-    queueRefresh.poll().then(function(data) {
+  function pollQueue(sessionkey) {
+    queueRefresh.poll(sessionkey).then(function(data) {
       $scope.queueData = data;
       $scope.data = data.queue;
       $timeout(pollQueue, $scope.refresh * 1000);
@@ -53,14 +53,14 @@ app.controller("PostsCtrl", function($scope, $http, $timeout, queueRefresh) {
 });
 app.factory('queueRefresh', function($http, $timeout) {
   $http.defaults.cache = false;
-  var poller = function() {
+  var poller = function(sessionkey) {
     return $http.get('tapi', {
       params: {
         start: 0,
         limit: 10,
         mode: "queue",
         output: "json",
-        apikey: $scope.sessionkey
+        apikey: sessionkey
       }
     }).then(function(responseData) {
       return responseData;
