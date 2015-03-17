@@ -35,7 +35,7 @@
     Speed: {{ queue.speed }}/s $T('menu-queue')
     <br/> Total number of files: {{ queue.noofslots }}
     <br/>
-    <div class="form-group" >
+    <div class="form-group">
       <br/> Items per page:
       <select class="form-control" style="width:66px;" data-ng-model="noOfRows" data-ng-options="item for item in [5,10,20,30,40,0]"></select>
       <br/> Refresh Speed:
@@ -46,12 +46,14 @@
       <button class="btn btn-default" data-ng-click="pauseAll(pausedAll, \$event);">{{ pausedAll ? "Resume" : "Pause" }} </button>
     </div>
     <button class="btn btn-info" data-ng-click="getQueueChange(!refreshing)">{{ refreshing ? "Stop" : "Start" }} updating</button>
-    <div>
+    <div id="queue-table">
       <table class="table table-striped table-bordered table-condensed queueTable" ui-sortable="sortableOptions" data-ng-model="queue.slots">
         <tr>
           <td>Status</td>
           <td>Filename</td>
           <td>Percentage</td>
+          <td>Size Left</td>
+          <td>Size</td>
           <td>TimeLeft</td>
           <td>Category</td>
           <td>Delete</td>
@@ -67,6 +69,8 @@
                 <span style="color:black; white-space:nowrap;width:100%;">{{slot.percentage}} %</span>
               </progressbar>
             </td>
+            <td>{{slot.mbleft}}</td>
+            <td>{{slot.mb}}</td>
             <td>{{slot.timeleft}}</td>
             <td>
               <select id="script-all" data-ng-model="selectedCategory" data-ng-change="changeCategory(slot.nzo_id, selectedCategory,\$event)">
@@ -80,6 +84,37 @@
         </tbody>
       </table>
       <pagination total-items="queue.noofslots" data-ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="true" items-per-page="noOfRows"></pagination>
+    </div>
+    
+    History:
+    <div data-ng-init="showRawData=false" data-ng-show="showRawData" class="bg-info">
+      {{ history }}
+      <br/>
+    </div>
+    <div id="history-table">
+      <table class="table table-striped table-bordered table-condensed historyTable" ui-sortable="sortableOptionsHistory" data-ng-model="history.slots">
+        <tr>
+          <td>Status</td>
+          <td>Filename</td>
+          <td>Size</td>
+          <td>Delete</td>
+        </tr>
+        <tbody>
+          <tr data-ng-class="rowClass" class="repeat-item" data-ng-repeat="slot in history.slots | filter:searchHistory | orderBy:slot.index track by slot.nzo_id">
+            <td>
+              {{slot.status}}
+            </td>
+            <td>{{slot.name}}</td>
+            <td>
+              {{slot.size}}
+            </td>
+            <td>
+              <button class="btn btn-danger" data-ng-click="">Delete (TODO)</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <pagination total-items="history.noofslots" data-ng-model="currentPageHistory" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="true" items-per-page="noOfRowsHistory"></pagination>
     </div>
   </body>
 

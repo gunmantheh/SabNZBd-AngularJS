@@ -3,6 +3,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
   $scope.refresh = 1;
   $scope.maxSize = 5;
   $scope.noOfRows = 10;
+  $scope.noOfRowsHistory = 10;
   $scope.refreshing = true;
   $scope.deleteNZB = function(id, event) {
     console.log("Removing queue item", id);
@@ -71,7 +72,6 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
     });
   };
 
-  $scope.counter = 0;
   $scope.getQueue = function() {
     console.log('Called getQueue, using API: ' + $scope.sessionkey);
     $http.get('tapi', {
@@ -84,22 +84,43 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
       }
     }).success(function(data, status, headers, config) {
       $scope.queue = data.queue;
-      //$scope.counter++;
-      //console.log('response ' + $scope.counter);
       $scope.queuetimeout = $timeout($scope.getQueue, $scope.refresh * 1000);
     });
   };
+
+
+  $scope.getHistory = function() {
+    console.log('Called getHistory, using API: ' + $scope.sessionkey);
+    $http.get('tapi', {
+      params: {
+        start: $scope.currentPageHistory === 0 ? 0 : ($scope.currentPageHistory - 1) * $scope.noOfRowsHistory,
+        limit: $scope.noOfRowsHistory,
+        mode: "history",
+        output: "json",
+        apikey: $scope.sessionkey
+      }
+    }).success(function(data, status, headers, config) {
+      $scope.history = data.history;
+      $scope.historytimeout = $timeout($scope.getHistory, $scope.refresh * 1000);
+    });
+  };
+
   $scope.queuetimeout = $timeout($scope.getQueue, $scope.refresh * 1000);
+  $scope.historytimeout = $timeout($scope.getHistory, $scope.refresh * 1000);
 
   $scope.getQueueChange = function(status) {
     if (status) {
       $scope.queuetimeout = $timeout($scope.getQueue, $scope.refresh * 1000);
+      $scope.historytimeout = $timeout($scope.getHistory, $scope.refresh * 1000);
     } else {
       $timeout.cancel($scope.queuetimeout);
+      $timeout.cancel($scope.historytimeout);
     }
     $scope.refreshing = status;
 
   };
+
+
 
 
   $scope.changeOrder = function(id, toIndex) {
