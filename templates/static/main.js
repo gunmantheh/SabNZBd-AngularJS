@@ -8,7 +8,7 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
 
   // initial run
 
-  $scpoe.getQueue();
+  $scope.getQueue();
   $scope.getHistory();
 
   $scope.deleteNZB = function(id, event) {
