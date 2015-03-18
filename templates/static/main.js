@@ -5,6 +5,12 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
   $scope.noOfRows = 10;
   $scope.noOfRowsHistory = 10;
   $scope.refreshing = true;
+
+  // initial run
+
+  $scpoe.getQueue();
+  $scope.getHistory();
+
   $scope.deleteNZB = function(id, event) {
     console.log("Removing queue item", id);
     $http.get('tapi', {
