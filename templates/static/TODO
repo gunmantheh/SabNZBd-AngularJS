@@ -1,2 +1,3 @@
 [ ] - add support for multiple changes of categories
 [ ] - add support for file rename
+[ ] - add support for the immidiate refresh after changing pages (cancel current $timeout and create new instance of the call)
