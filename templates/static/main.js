@@ -6,10 +6,6 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
   $scope.noOfRowsHistory = 10;
   $scope.refreshing = true;
 
-  // initial run
-
-  $scope.getQueue();
-  $scope.getHistory();
 
   $scope.deleteNZB = function(id, event) {
     console.log("Removing queue item", id);
@@ -127,6 +123,10 @@ app.controller("PostsCtrl", function($scope, $http, $timeout) {
   };
 
 
+    // initial run
+
+    $scope.getQueue();
+    $scope.getHistory();
 
 
   $scope.changeOrder = function(id, toIndex) {
